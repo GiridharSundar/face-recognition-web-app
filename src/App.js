@@ -59,7 +59,7 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    fetch('http://localhost:3000/')
+    fetch('https://git.heroku.com/agile-waters-59493.git/')
       .then(response => response.json())
       .then(console.log);
   }
@@ -108,7 +108,7 @@ class App extends React.Component {
 
   onButtonSubmit = () => {
     this.setState({imageURL : this.state.input});
-    fetch('http://localhost:3000/imageurl', {
+    fetch('https://git.heroku.com/agile-waters-59493.git/imageurl', {
       method : 'post',
       headers : {'Content-Type': 'application/json'},
       body : JSON.stringify({
@@ -118,7 +118,7 @@ class App extends React.Component {
     .then(response => response.json())
     .then(response => {
       if(response){
-        fetch('http://localhost:3000/image', {
+        fetch('https://git.heroku.com/agile-waters-59493.git/image', {
             method : 'put',
             headers : {'Content-Type': 'application/json'},
             body : JSON.stringify({

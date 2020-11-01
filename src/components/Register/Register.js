@@ -23,7 +23,7 @@ class Register extends Component {
 	}
 
 	onSubmitRegister = () => {
-		fetch('http://localhost:3000/register', {
+		fetch('https://git.heroku.com/agile-waters-59493.git/register', {
 			method : 'post',
 			headers : {'Content-Type' : 'application/json'},
 			body : JSON.stringify({
