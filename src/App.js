@@ -108,35 +108,32 @@ class App extends React.Component {
 
   onButtonSubmit = () => {
     this.setState({imageURL : this.state.input});
-    if(!(this.state.input === '')) {
-      fetch('https://agile-waters-59493.herokuapp.com/imageurl', {
+    fetch('https://agile-waters-59493.herokuapp.com/imageurl', {
       method : 'post',
       headers : {'Content-Type': 'application/json'},
       body : JSON.stringify({
         input : this.state.input
       })
-      })
-      .then(response => response.json())
-      .then(response => {
-        if(response){
-          fetch('https://agile-waters-59493.herokuapp.com/image', {
-              method : 'put',
-              headers : {'Content-Type': 'application/json'},
-              body : JSON.stringify({
-                id : this.state.user.id
-            })
+    })
+    .then(response => response.json())
+    .then(response => {
+      if(response){
+        fetch('https://agile-waters-59493.herokuapp.com/image', {
+            method : 'put',
+            headers : {'Content-Type': 'application/json'},
+            body : JSON.stringify({
+              id : this.state.user.id
           })
-            .then(response => response.json())
-            .then(count => {
-              this.setState(Object.assign(this.state.user , {entries : count}))
-            })
-        this.displayFaceBox(this.calculateFaceLocation(response))
-        }
-      })
-      .catch(err => console.log(err))
-        // there was an error
+        })
+          .then(response => response.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user , {entries : count}))
+          })
+      this.displayFaceBox(this.calculateFaceLocation(response))
       }
-
+    })
+    .catch(err => console.log(err))
+      // there was an error
   }
   render(){
     const {isSignedIn , box, imageURL, route ,user} = this.state;
