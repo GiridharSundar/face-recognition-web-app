@@ -14,12 +14,12 @@ import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 
 const particlesOptions = {
   particles: {
-    number : {
-      value : 200,
+    number: {
+      value: 40,
       density: {
-        enable : true,
-        value_area : 800
-      } 
+        enable: true,
+        value_area: 800
+      }
     }
   }
 }
@@ -27,7 +27,7 @@ const particlesOptions = {
 const initialState = {
     input : '',
     imageURL : '',
-    box : {},
+    boxes : [],
     route : 'SignIn',
     isSignedIn : false,
     user : {
@@ -42,26 +42,12 @@ const initialState = {
 class App extends React.Component {
   constructor(){
     super();
-    this.state = {
-      input : '',
-      imageURL : '',
-      box : {},
-      route : 'SignIn',
-      isSignedIn : false,
-      user : {
-        id : "",
-        name: "",
-        email : "",
-        entries : 0,
-        joined : '',
-      }
-    }
+    this.state = initialState;
   }
 
   componentDidMount(){
     fetch('https://agile-waters-59493.herokuapp.com/')
       .then(response => response.json())
-      .then(console.log);
   }
 
   loadUser = (data) => {
@@ -76,21 +62,26 @@ class App extends React.Component {
   }
 
   calculateFaceLocation = (data) => {
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-    const image = document.getElementById('inputImage');
-    const height = Number(image.height);
+    const noOfFaces = data.outputs[0].data.regions.length;
+    const clarifaiFaces = data.outputs[0].data.regions;
+    const image = document.getElementById('inputimage');
     const width = Number(image.width);
-    return {
-      leftCol : clarifaiFace.left_col * width,
-      topRow : clarifaiFace.top_row * height,
-      rightCol : width - (clarifaiFace.right_col * width),
-      bottomRow : height - (clarifaiFace.bottom_row * height)
+    const height = Number(image.height);
+    let boxes = []
+    for( let i = 0; i < noOfFaces; i++){
+      boxes.push({
+          leftCol: clarifaiFaces[i].region_info.bounding_box.left_col * width,
+          topRow: clarifaiFaces[i].region_info.bounding_box.top_row * height,
+          rightCol: width - (clarifaiFaces[i].region_info.bounding_box.right_col * width),
+          bottomRow: height - (clarifaiFaces[i].region_info.bounding_box.bottom_row * height)      
+      })
     }
+    return boxes;
   }
 
   
-  displayFaceBox = (box) => {
-    this.setState({box : box});
+  displayFaceBox = (boxes) => {
+    this.setState({boxes : boxes});
   } 
    
   onInputChange = (event) => {
@@ -136,7 +127,7 @@ class App extends React.Component {
       // there was an error
   }
   render(){
-    const {isSignedIn , box, imageURL, route ,user} = this.state;
+    const {isSignedIn , boxes, imageURL, route ,user} = this.state;
     return (
       <div className = "App">
       <Particles className = 'particles'
@@ -151,7 +142,7 @@ class App extends React.Component {
             onInputChange={this.onInputChange} 
             onButtonSubmit= {this.onButtonSubmit}
           />
-          <FaceRecognition box = {box} faceDetectURL = {imageURL} />
+          <FaceRecognition boxes = {boxes} imageURL = {imageURL} />
         </div>
         : (
           this.state.route === 'SignIn' 
